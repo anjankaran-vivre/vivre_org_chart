@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vivre Panels Organization Chart</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: Arial, Helvetica, sans-serif; background:#fff; color:#111; }
+
+  .page { border:1px solid #999; margin:12px; }
+
+  .title-bar { background:#4a8c3f; padding:14px 20px; text-align:center; }
+  .title-bar h1 { color:#fff; font-size:28px; font-weight:700; letter-spacing:.5px; }
+
+  .content { padding:24px 20px; }
+  .main-layout { display:flex; gap:0; align-items:flex-start; }
+  .chart-col { flex:1; position:relative; }
+
+  .box { text-align:center; font-weight:600; display:inline-block; border-radius:6px; }
+
+  .box-ea {
+    background:#2f54a8; color:#fff; border:1px solid #2f54a8;
+    padding:10px 38px; font-size:14px; line-height:1.25;
+  }
+  .box-ea small { display:block; font-size:12px; font-weight:500; }
+
+  .box-coord {
+    background:#2b8a7d; color:#fff; border:1px solid #2b8a7d;
+    padding:10px 36px; font-size:14px; letter-spacing:.4px;
+  }
+
+  .box-dept {
+    background:#eef4fb; color:#111; border:1.5px solid #2f54a8;
+    padding:12px 44px; font-size:18px; font-weight:700;
+  }
+
+  .box-section {
+    background:#eef4fb; color:#111; border:1px solid #2f54a8;
+    padding:8px 20px; font-size:14px; font-weight:700;
+  }
+
+  .box-tl {
+    background:#2b8a7d; color:#fff; border:1px solid #2b8a7d;
+    padding:8px 22px; font-size:13px; letter-spacing:.4px;
+  }
+
+  .box-role {
+    background:#fff; color:#111; border:1px solid #2f54a8;
+    padding:8px 12px; font-size:11px; font-weight:500;
+    min-width:140px; line-height:1.35; white-space:normal;
+  }
+
+  .box-pc {
+    background:#eef4fb; color:#111; border:1.5px solid #2f54a8;
+    padding:18px 36px; font-size:26px; font-weight:700;
+  }
+
+  .arrow-down {
+    width:2px; height:22px; background:#2f54a8;
+    margin:0 auto; position:relative;
+  }
+  .arrow-down::after {
+    content:""; position:absolute; left:50%; bottom:-1px;
+    transform:translateX(-50%);
+    border-left:5px solid transparent; border-right:5px solid transparent;
+    border-top:7px solid #2f54a8;
+  }
+
+  .arrow-down-dashed {
+    width:0; border-left:2px dashed #2f54a8; height:18px;
+    margin:0 auto; position:relative;
+  }
+  .arrow-down-dashed::after {
+    content:""; position:absolute; left:-5px; bottom:-1px;
+    border-left:5px solid transparent; border-right:5px solid transparent;
+    border-top:7px solid #2f54a8;
+  }
+
+  .top-stack { display:flex; flex-direction:column; align-items:center; }
+
+  .teams-wrap { margin-top:6px; position:relative; }
+
+  .dashed-bar-row {
+    display:flex; justify-content:space-between; align-items:flex-start;
+    width:52%; margin:0 auto; position:relative;
+  }
+  .dashed-bar-row::before {
+    content:""; position:absolute; top:0; left:1%; right:1%;
+    border-top:2px dashed #2f54a8;
+  }
+  .branch-arrow {
+    width:0; border-left:2px solid #2f54a8; height:18px; position:relative;
+  }
+  .branch-arrow::after {
+    content:""; position:absolute; left:-5px; bottom:-1px;
+    border-left:5px solid transparent; border-right:5px solid transparent;
+    border-top:7px solid #2f54a8;
+  }
+
+  .teams-row {
+    display:flex; justify-content:center; gap:12px;
+    width:100%; margin:0 auto; align-items:flex-start;
+  }
+  .team-col { display:flex; flex-direction:column; align-items:center; min-width:170px; }
+
+  .right-sidebar {
+    display:flex; flex-direction:column; align-items:flex-start;
+    min-width:200px; max-width:220px;
+    position:relative; padding:0;
+    gap:14px;
+  }
+
+  .pc-bracket {
+    position:absolute;
+    right:180px; top:0;
+    width:14px;
+    border-top:2px solid #2f54a8;
+    border-right:2px solid #2f54a8;
+    border-bottom:2px solid #2f54a8;
+    border-left:none;
+    border-top-right-radius:6px;
+    border-bottom-right-radius:6px;
+  }
+
+  .pc-bracket-arrow {
+    position:absolute;
+    display:flex; align-items:center;
+    right:160px;
+  }
+  .pc-bracket-arrow-line { height:2px; width:10px; background:#2f54a8; }
+  .pc-bracket-arrow-head {
+    width:0; height:0;
+    border-top:5px solid transparent; border-bottom:5px solid transparent;
+    border-left:8px solid #2f54a8;
+  }
+
+  .box-pc {
+    position:absolute;
+    right:50px;
+  }
+
+  .flow-box {
+    border:1px solid #2f54a8; border-radius:6px;
+    width:100%; overflow:hidden; background:#fff;
+    margin-top: 140px;
+  }
+  .flow-header {
+    color:#2f54a8; text-align:left;
+    font-size:12px; font-weight:700; padding:10px 12px 6px;
+    letter-spacing:.4px; border-bottom:1px solid #e5ecf5;
+  }
+  .flow-body { padding:10px 12px; }
+
+  .flow-step {
+    display:flex; gap:10px; font-size:10.5px; color:#222; line-height:1.45;
+  }
+  .flow-num {
+    background:#2f54a8; color:#fff;
+    width:20px; height:20px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:11px; font-weight:700; flex-shrink:0; margin-top:1px;
+  }
+  .flow-step-title { font-weight:700; font-size:10.5px; text-transform:uppercase; color:#111; margin-bottom:2px; }
+
+  .flow-step-arrow {
+    display:flex; align-items:center; padding-left:2px; margin:3px 0;
+  }
+  .flow-step-arrow-line {
+    width:2px; height:14px; background:#2f54a8; margin-left:8px; position:relative;
+  }
+  .flow-step-arrow-line::after {
+    content:""; position:absolute; left:-4px; bottom:-1px;
+    border-left:5px solid transparent; border-right:5px solid transparent;
+    border-top:6px solid #2f54a8;
+  }
+
+  .notes-bar {
+    margin:14px 12px 12px; border:1px solid #cdd6e2; border-radius:6px;
+    display:flex; align-items:stretch; overflow:hidden; background:#fff;
+    margin-top: 80px;
+  }
+  .notes-label {
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:14px 16px; gap:6px; min-width:100px; flex-shrink:0;
+    border-right:1px solid #e5ecf5;
+  }
+  .notes-label svg { width:30px; height:30px; fill:#2f54a8; }
+  .notes-label span { font-size:11px; font-weight:700; color:#2f54a8; letter-spacing:.5px; text-align:center; line-height:1.25; }
+
+  .notes-items { display:flex; flex:1; }
+  .note-cell {
+    padding:10px 12px; font-size:12px; color:#333; line-height:1.45;
+    display:flex; gap:8px; align-items:flex-start;
+    border-right:1px solid #e5ecf5;
+  }
+  .note-cell:last-child { border-right:none; }
+  .note-a { flex:1; }
+  .note-b { flex:1; }
+  .note-c { flex:1; }
+  .note-d { flex:1; }
+  .note-e { flex:1; }
+  .note-f { flex:1.8; }
+  .note-letter {
+    width:22px; height:22px; border-radius:50%;
+    background:#2f54a8; color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-size:15px; font-weight:700; flex-shrink:0;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="title-bar">
+    <h1>Vivre Panels Organization Chart</h1>
+  </div>
+
+  <div class="content">
+    <div class="main-layout">
+
+      <div class="chart-col">
+
+        <div class="top-stack">
+          <div class="arrow-down"></div>
+          <div class="box box-ea" id="eaBox">
+            EA
+            <small>(Executive Assistant)</small>
+          </div>
+          <div class="arrow-down"></div>
+          <div class="box box-coord">COORDINATORS</div>
+          <div class="arrow-down"></div>
+          <div class="box box-dept">Operations (Outbound)</div>
+          <div class="arrow-down"></div>
+        </div>
+
+        <div class="teams-wrap">
+          <div class="dashed-bar-row">
+            <div class="branch-arrow"></div>
+            <div class="branch-arrow"></div>
+            <div class="branch-arrow"></div>
+            <div class="branch-arrow"></div>
+            <div class="branch-arrow"></div>
+          </div>
+          <div class="teams-row" style="margin-top:4px;">
+
+            <div class="team-col">
+              <div class="box box-section">Billing</div>
+              <div style="height:16px;"></div>
+
+              <div class="box box-tl">Team Lead<br>Billing</div>
+              <div class="arrow-down-dashed"></div>
+              <div class="box box-role">Executive<br>Billing</div>
+              <div class="arrow-down-dashed"></div>
+              <div class="box box-role">Executive<br>Commercial Accounts</div>
+            </div>
+
+            <div class="team-col">
+              <div class="box box-section" style="font-size:12px;">Order<br>Processing</div>
+              <div style="height:16px;"></div>
+
+              <div class="box box-role">Executive<br>Customer Support</div>
+              <div class="arrow-down-dashed"></div>
+              <div class="box box-role">Customer<br>Relationship<br>Executive</div>
+              <div class="arrow-down-dashed"></div>
+              <div class="box box-role">Executive<br>Order Processing</div>
+            </div>
+
+            <div class="team-col">
+              <div class="box box-section">QC</div>
+              <div style="height:16px;"></div>
+
+              <div class="box box-role">Executive<br>Quality Control</div>
+            </div>
+
+            <div class="team-col">
+              <div class="box box-section">Logistics</div>
+              <div style="height:16px;"></div>
+
+              <div class="box box-tl">Manager<br>Senior Coordinator</div>
+              <div class="arrow-down-dashed"></div>
+              <div class="box box-role">Executive<br>Client Relationship</div>
+              <div class="arrow-down-dashed"></div>
+              <div class="box box-role">Supply Chain<br>Executive</div>
+              <div class="arrow-down-dashed"></div>
+              <div class="box box-role">Data Entry<br>Operator</div>
+            </div>
+
+            <div class="team-col">
+              <div class="box box-section" style="font-size:12px;">Checking /<br>Process</div>
+              <div style="height:16px;"></div>
+
+              <div class="box box-tl">Team Lead<br>Process &amp; Systems</div>
+              <div class="arrow-down-dashed"></div>
+              <div class="box box-role">Process<br>Coordinator</div>
+              <div class="arrow-down-dashed"></div>
+              <div class="box box-role">Executive<br>Dispatch &amp; Logistics</div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="pc-bracket" id="pcBracket"></div>
+
+        <div class="pc-bracket-arrow" id="pcBracketArrow">
+          <div class="pc-bracket-arrow-line"></div>
+          <div class="pc-bracket-arrow-head"></div>
+        </div>
+        <div class="box box-pc" id="pcBox">PC</div>
+
+      </div>
+
+      <div class="right-sidebar" id="rightSidebar">
+
+        <div class="flow-box">
+            <div class="flow-header">FLOW OF COMMUNICATION</div>
+            <div class="flow-body">
+
+              <div class="flow-step">
+                <div class="flow-num">1</div>
+                <div>
+                  <div class="flow-step-title">Team Members / Executives</div>
+                  Execute tasks and raise requests or issues to their Team Lead.
+                </div>
+              </div>
+              <div class="flow-step-arrow"><div class="flow-step-arrow-line"></div></div>
+
+              <div class="flow-step">
+                <div class="flow-num">2</div>
+                <div>
+                  <div class="flow-step-title">Process Coordinator (PC)</div>
+                  PC reviews, verifies, prioritizes and escalates if required.
+                </div>
+              </div>
+              <div class="flow-step-arrow"><div class="flow-step-arrow-line"></div></div>
+
+              <div class="flow-step">
+                <div class="flow-num">3</div>
+                <div>
+                  <div class="flow-step-title">Manager / TL Layer</div>
+                  Managers / TLs work on only important things. Managers / TLs review &amp; take necessary action.
+                </div>
+              </div>
+              <div class="flow-step-arrow"><div class="flow-step-arrow-line"></div></div>
+
+              <div class="flow-step">
+                <div class="flow-num">4</div>
+                <div>
+                  <div class="flow-step-title">Executive Assistants (EA)</div>
+                  They are the voice of the Directors. EAs consolidate and compile the information and present it to Directors.
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <div class="notes-bar">
+    <div class="notes-label">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm7 18H5V5h2v3h10V5h2v16z"/>
+      </svg>
+      <span>NOTES &amp;<br>GUIDELINES</span>
+    </div>
+    <div class="notes-items">
+      <div class="note-cell note-a"><div class="note-letter">A</div><div>All communication and escalation must follow the defined flow. Direct communication with Directors or Managers is not allowed.</div></div>
+      <div class="note-cell note-b"><div class="note-letter">B</div><div>PC (Process Coordinator) is the primary control and escalation authority.</div></div>
+      <div class="note-cell note-c"><div class="note-letter">C</div><div>Verbal / WhatsApp escalations are not allowed and may lead to negative impact on performance.</div></div>
+      <div class="note-cell note-d"><div class="note-letter">D</div><div>PC layer ensures quality control, paper workflow, and prevents unnecessary escalations.</div></div>
+      <div class="note-cell note-e"><div class="note-letter">E</div><div>Use the central system (FMS / Dashboard) to raise requests, track status, and share updates.</div></div>
+      <div class="note-cell note-f"><div class="note-letter">F</div><div>All tasks and projects will be assigned only through the Executive Assistant or the respective Department Team Lead. In departments where no Team Lead is assigned, task delegation will be managed solely by the EA. Executive and Senior Executive level employees are not authorized to delegate tasks within their departments.</div></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function positionBracket() {
+  var chartCol = document.querySelector('.chart-col');
+  var bracket  = document.getElementById('pcBracket');
+  var arrow    = document.getElementById('pcBracketArrow');
+  var pcBox    = document.getElementById('pcBox');
+  var eaBox    = document.getElementById('eaBox');
+
+  if (!chartCol || !bracket || !eaBox || !pcBox || !arrow) return;
+
+  var ccRect = chartCol.getBoundingClientRect();
+  var eaRect = eaBox.getBoundingClientRect();
+
+  var bTop    = eaRect.top - ccRect.top;
+  var bHeight = ccRect.bottom - eaRect.top;
+
+  bracket.style.top    = bTop + 'px';
+  bracket.style.height = bHeight + 'px';
+
+  var midY = eaRect.top + bHeight / 2;
+
+  arrow.style.top  = (midY - ccRect.top - 4) + 'px';
+
+  var pcH = pcBox.offsetHeight;
+  var pcTop = (midY - ccRect.top) - pcH / 2;
+  pcBox.style.top = Math.max(0, pcTop) + 'px';
+}
+window.addEventListener('load', positionBracket);
+window.addEventListener('resize', positionBracket);
+</script>
+</body>
+</html>
