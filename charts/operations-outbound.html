@@ -83,7 +83,7 @@
 
   .dashed-bar-row {
     display:flex; justify-content:space-between; align-items:flex-start;
-    width:52%; margin:0 auto; position:relative;
+    width:67%; margin:0 auto; position:relative;
   }
   .dashed-bar-row::before {
     content:""; position:absolute; top:0; left:1%; right:1%;
@@ -102,7 +102,7 @@
     display:flex; justify-content:center; gap:12px;
     width:100%; margin:0 auto; align-items:flex-start;
   }
-  .team-col { display:flex; flex-direction:column; align-items:center; min-width:170px; }
+  .team-col { display:flex; flex-direction:column; align-items:center; min-width:140px; }
 
   .right-sidebar {
     display:flex; flex-direction:column; align-items:flex-start;
@@ -113,7 +113,7 @@
 
   .pc-bracket {
     position:absolute;
-    right:180px; top:0;
+    right:40px; top:0;
     width:14px;
     border-top:2px solid #2f54a8;
     border-right:2px solid #2f54a8;
@@ -137,13 +137,14 @@
 
   .box-pc {
     position:absolute;
-    right:50px;
+    right:0px;
+    top:10px;
   }
 
   .flow-box {
     border:1px solid #2f54a8; border-radius:6px;
     width:100%; overflow:hidden; background:#fff;
-    margin-top: 140px;
+    margin-top: 250px;
   }
   .flow-header {
     color:#2f54a8; text-align:left;
@@ -397,16 +398,44 @@ function positionBracket() {
   bracket.style.top    = bTop + 'px';
   bracket.style.height = bHeight + 'px';
 
-  var midY = eaRect.top + bHeight / 2;
+  var flowBox = document.querySelector('.flow-box');
+  var centreY;
+  if (flowBox) {
+    var fb = flowBox.getBoundingClientRect();
+    centreY = fb.top + fb.height / 2;
+  } else {
+    centreY = eaRect.top + bHeight / 2;
+  }
 
-  arrow.style.top  = (midY - ccRect.top - 4) + 'px';
+  arrow.style.top  = (centreY - ccRect.top - 4) + 'px';
 
   var pcH = pcBox.offsetHeight;
-  var pcTop = (midY - ccRect.top) - pcH / 2;
+  var pcTop = (centreY - ccRect.top) - pcH / 2;
   pcBox.style.top = Math.max(0, pcTop) + 'px';
 }
-window.addEventListener('load', positionBracket);
-window.addEventListener('resize', positionBracket);
+function zoomChart() {
+  var page = document.querySelector('.page');
+  if (!page) return;
+  var maxR = document.body.scrollWidth;
+  var list = '.right-sidebar,.notes-bar,.teams-row,.pc-bracket,.box-pc';
+  document.querySelectorAll(list).forEach(function(el) {
+    var r = el.getBoundingClientRect();
+    maxR = Math.max(maxR, r.right);
+  });
+  var bL = document.body.getBoundingClientRect().left;
+  var cw = maxR - bL + 2;
+  var aw = window.innerWidth - 2;
+  if (cw > aw && cw > 0) page.style.zoom = aw / cw;
+}
+function syncView() {
+  var p = document.querySelector('.page');
+  if (p) p.style.zoom = '';
+  void document.body.offsetWidth;
+  positionBracket();
+  zoomChart();
+}
+window.addEventListener('load', syncView);
+window.addEventListener('resize', syncView);
 </script>
 </body>
 </html>
