@@ -83,7 +83,7 @@
 
   .dashed-bar-row {
     display:flex; justify-content:space-between; align-items:flex-start;
-    width:58%; margin:0 auto; position:relative;
+    width:78%; margin:0 auto; position:relative;
   }
   .dashed-bar-row::before {
     content:""; position:absolute; top:0; left:1%; right:1%;
@@ -113,7 +113,7 @@
 
   .pc-bracket {
     position:absolute;
-    right:150px; top:0;
+    right:30px; top:0;
     width:14px;
     border-top:2px solid #2f54a8;
     border-right:2px solid #2f54a8;
@@ -126,7 +126,8 @@
   .pc-bracket-arrow {
     position:absolute;
     display:flex; align-items:center;
-    right:90px;
+    right:40px;
+    top:100px;
   }
   .pc-bracket-arrow-line { height:2px; width:10px; background:#2f54a8; }
   .pc-bracket-arrow-head {
@@ -137,7 +138,7 @@
 
   .box-pc {
     position:absolute;
-    right:30px;
+    right:60px; top:70px;
   }
 
   .flow-box {
@@ -390,35 +391,15 @@
 function positionBracket() {
   var chartCol = document.querySelector('.chart-col');
   var bracket  = document.getElementById('pcBracket');
-  var arrow    = document.getElementById('pcBracketArrow');
-  var pcBox    = document.getElementById('pcBox');
   var eaBox    = document.getElementById('eaBox');
 
-  if (!chartCol || !bracket || !eaBox || !pcBox || !arrow) return;
+  if (!chartCol || !bracket || !eaBox) return;
 
   var ccRect = chartCol.getBoundingClientRect();
   var eaRect = eaBox.getBoundingClientRect();
 
-  var bTop    = eaRect.top - ccRect.top;
-  var bHeight = ccRect.bottom - eaRect.top;
-
-  bracket.style.top    = bTop + 'px';
-  bracket.style.height = bHeight + 'px';
-
-  var flowBox = document.querySelector('.flow-box');
-  var centreY;
-  if (flowBox) {
-    var fb = flowBox.getBoundingClientRect();
-    centreY = fb.top + fb.height / 2;
-  } else {
-    centreY = eaRect.top + bHeight / 2;
-  }
-
-  arrow.style.top  = (centreY - ccRect.top - 4) + 'px';
-
-  var pcH = pcBox.offsetHeight;
-  var pcTop = (centreY - ccRect.top) - pcH / 2;
-  pcBox.style.top = Math.max(0, pcTop) + 'px';
+  bracket.style.top    = (eaRect.top - ccRect.top) + 'px';
+  bracket.style.height = (ccRect.bottom - eaRect.top) + 'px';
 }
 function zoomChart() {
   var page = document.querySelector('.page');
